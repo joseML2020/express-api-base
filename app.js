@@ -3,7 +3,7 @@ const createError = require('http-errors');
 const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
-const port = process.env.PORT || 8000;
+const { connectDatabase } = require('./config/db.config');
 
 const app = express();
 
@@ -14,8 +14,9 @@ app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 
-/** Routes */
-const routes = require('./config/routes.config');
+connectDatabase();
+
+const routes = require('./routes/index.js');
 app.use('/api', routes);
 
 /** Error Handling */
@@ -23,7 +24,7 @@ app.use((req, res, next) => {
   next(createError(404, 'Route not found'));
 });
 
-app.use((error, req, res, next) => {
+app.use((error, res) => {
   if (!error.status) {
     error = createError(500, error);
   }
