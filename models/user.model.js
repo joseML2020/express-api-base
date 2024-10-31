@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    activationCode: { type: String, unique: true, required: false }
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {
@@ -31,6 +32,10 @@ userSchema.pre('save', async function (next) {
     }
     next();
 });
+
+userSchema.methods.comparePassword = async function(candidatePassword) {
+    return await bcrypt.compare(candidatePassword, this.password);
+};
 
 const User = mongoose.model('User', userSchema);
 
