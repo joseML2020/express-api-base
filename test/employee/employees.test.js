@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const request = require('supertest');
-const app = require('../../app'); // Asegúrate de que la ruta a tu app sea correcta
+const app = require('../../app');
 const employees = require('../../models/employees.json');
 const User = require('../../models/user.model');
 
@@ -8,7 +8,7 @@ describe('Employee API', () => {
     let token; 
 
     beforeAll(async () => {
-        const allUsers = await User.find({}); // Asegúrate de tener acceso al modelo User
+        const allUsers = await User.find({});
         console.log('Usuarios actuales en la base de datos:', allUsers);
         console.log('Login')
         const loginResponse = await request(app)
@@ -16,7 +16,7 @@ describe('Employee API', () => {
             .send({ email: 'testuser@example.com', password: 'testpassword' }); 
         expect(loginResponse.statusCode).toBe(200);
         expect(loginResponse.body).toHaveProperty('token');
-        token = loginResponse.body.token; // Almacenar el token
+        token = loginResponse.body.token; 
         console.log(`Toke: ${token}`)
     });
 
@@ -85,7 +85,7 @@ describe('Employee API', () => {
 
         const response = await request(app)
             .post('/api/employees')
-            .set('Authorization', `Bearer ${token}`) // Establecer el token en la cabecera
+            .set('Authorization', `Bearer ${token}`) 
             .send(newEmployee);
 
         expect(response.statusCode).toBe(201);

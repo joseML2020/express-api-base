@@ -5,18 +5,16 @@ const mongoose = require('mongoose');
 const { disconnectDB } = require('../../config/db.config');
 
 describe('POST /api/posts', () => {
-    let token; // Variable para almacenar el token
+    let token;
 
-    // Antes de todas las pruebas, autenticarse y obtener un token
     beforeAll(async () => {
         const loginResponse = await request(app)
-            .post('/api/auth/login') // Ruta de inicio de sesión
-            .send({ username: 'usuario', password: 'contraseña' }); // Cambia esto según tus credenciales
+            .post('/api/auth/login') 
+            .send({ username: 'usuario', password: 'contraseña' });
 
-        // Verificar que la respuesta contenga un token
         expect(loginResponse.status).toBe(200);
         expect(loginResponse.body).toHaveProperty('token');
-        token = loginResponse.body.token; // Almacenar el token
+        token = loginResponse.body.token;
     });
 
     afterEach(async () => {
@@ -38,7 +36,7 @@ describe('POST /api/posts', () => {
         };
         const response = await request(app)
             .post('/api/posts')
-            .set('Authorization', `Bearer ${token}`) // Establecer el token en la cabecera
+            .set('Authorization', `Bearer ${token}`) 
             .send(newPost);
         console.log("Respuesta de la API:", response.body);
         expect(response.status).toBe(201);
@@ -46,8 +44,8 @@ describe('POST /api/posts', () => {
         expect(response.body).toHaveProperty('text', newPost.text);
         expect(response.body).toHaveProperty('author', newPost.author);
         expect(response.body).toHaveProperty('_id');
-        expect(response.body).toHaveProperty('createdAt'); // Ahora debería estar presente
-        expect(response.body).toHaveProperty('updatedAt'); // Ahora debería estar presente
+        expect(response.body).toHaveProperty('createdAt'); 
+        expect(response.body).toHaveProperty('updatedAt'); 
     });
 
     test('Debe responder con 400 si los datos no son válidos', async () => {

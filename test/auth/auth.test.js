@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 const request = require('supertest');
-const app = require('../../app'); // Asegúrate de que la ruta a tu app sea correcta
-const mongoose = require('mongoose');
+const app = require('../../app');
 
 describe('Auth API', () => {
     const testUser = {
@@ -43,23 +42,21 @@ describe('Auth API', () => {
     });
 
     test('Las rutas protegidas deben requerir autenticación', async () => {
-        // Intentar acceder a una ruta protegida sin token
         const response = await request(app)
-            .get('/api/posts') // Asegúrate de que esta ruta esté protegida
-            .set('Authorization', 'Bearer '); // Token vacío
+            .get('/api/posts')
+            .set('Authorization', 'Bearer ');
 
-        expect(response.status).toBe(401); // Debería devolver 401 Unauthorized
+        expect(response.status).toBe(401); 
 
-        // Intentar acceder a la misma ruta con un token inválido
+
         const invalidTokenResponse = await request(app)
             .get('/api/posts')
             .set('Authorization', 'Bearer invalidtoken');
 
-        expect(invalidTokenResponse.status).toBe(401); // Debería devolver 401 Unauthorized
+        expect(invalidTokenResponse.status).toBe(401);
     });
 
     test('Las rutas protegidas deben permitir el acceso con un token válido', async () => {
-        // Obtener un token válido
         const loginResponse = await request(app)
             .post('/api/auth/login')
             .send({
@@ -67,13 +64,12 @@ describe('Auth API', () => {
                 password: testUser.password,
             });
 
-        const token = loginResponse.body.token; // Obtener el token
+        const token = loginResponse.body.token;
 
         const protectedResponse = await request(app)
-            .get('/api/posts') // Asegúrate de que esta ruta esté protegida
+            .get('/api/posts') 
             .set('Authorization', `Bearer ${token}`);
 
-        expect(protectedResponse.status).toBe(200); // Debería devolver 200 OK
-        // Aquí puedes agregar más verificaciones para asegurarte de que la respuesta tenga el contenido esperado
+        expect(protectedResponse.status).toBe(200); 
     });
 });
