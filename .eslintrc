@@ -3,11 +3,12 @@
       "browser": true,
       "es2021": true,
       "node": true,
-      "jest": true // Añade esta línea para habilitar el entorno de Jest
+      "jest": true,
+      "es6": true
     },
     "extends": [
       "eslint:recommended",
-      "plugin:jest/recommended" // Añade la extensión del plugin de Jest
+      "plugin:jest/recommended"
     ],
     "parserOptions": {
       "ecmaVersion": 12

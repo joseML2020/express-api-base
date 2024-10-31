@@ -1,10 +1,24 @@
 /* eslint-disable no-undef */
 const request = require('supertest');
-const app = require('../app');
+const app = require('../../app');
 const mongoose = require('mongoose');
-const { disconnectDB } = require('../config/db.config');
+const { disconnectDB } = require('../../config/db.config');
 
 describe('POST /api/posts', () => {
+    let token; // Variable para almacenar el token
+
+    // Antes de todas las pruebas, autenticarse y obtener un token
+    beforeAll(async () => {
+        const loginResponse = await request(app)
+            .post('/api/auth/login') // Ruta de inicio de sesión
+            .send({ username: 'usuario', password: 'contraseña' }); // Cambia esto según tus credenciales
+
+        // Verificar que la respuesta contenga un token
+        expect(loginResponse.status).toBe(200);
+        expect(loginResponse.body).toHaveProperty('token');
+        token = loginResponse.body.token; // Almacenar el token
+    });
+
     afterEach(async () => {
         const allPosts = await mongoose.connection.collection('posts').find({}).toArray();
         console.log('Todos los posts antes de eliminar:');
@@ -24,6 +38,7 @@ describe('POST /api/posts', () => {
         };
         const response = await request(app)
             .post('/api/posts')
+            .set('Authorization', `Bearer ${token}`) // Establecer el token en la cabecera
             .send(newPost);
         console.log("Respuesta de la API:", response.body);
         expect(response.status).toBe(201);
@@ -43,10 +58,10 @@ describe('POST /api/posts', () => {
         };
         const response = await request(app)
             .post('/api/posts')
+            .set('Authorization', `Bearer ${token}`)
             .send(invalidPost);
         console.log("Respuesta de la API con datos no válidos:", response.body);
         expect(response.status).toBe(400);
         expect(response.body).toHaveProperty('errors');
     });
 });
-
